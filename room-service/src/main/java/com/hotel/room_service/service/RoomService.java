@@ -7,6 +7,8 @@ import com.hotel.room_service.repo.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.springframework.lang.NonNull;
+
 import java.util.List;
 
 @Service
@@ -30,7 +32,7 @@ public class RoomService {
     }
 
     // READ — Get a single room by its ID
-    public Room getRoomById(Long id) {
+    public Room getRoomById(@NonNull Long id) {
         return roomRepository.findById(id)
                 .orElseThrow(() -> new RoomNotFoundException(id));
     }
@@ -41,7 +43,7 @@ public class RoomService {
     }
 
     // UPDATE — Update an existing room's details
-    public Room updateRoom(Long id, Room updatedRoom) {
+    public Room updateRoom(@NonNull Long id, @NonNull Room updatedRoom) {
         Room existingRoom = roomRepository.findById(id)
                 .orElseThrow(() -> new RoomNotFoundException(id));
 
@@ -53,7 +55,7 @@ public class RoomService {
     }
 
     // DELETE — Remove a room by its ID
-    public void deleteRoom(Long id) {
+    public void deleteRoom(@NonNull Long id) {
         if (!roomRepository.existsById(id)) {
             throw new RoomNotFoundException(id);
         }
