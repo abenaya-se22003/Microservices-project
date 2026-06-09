@@ -1,0 +1,179 @@
+/* Shared page styles — Rooms */
+.page-container {
+  padding: 2rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+}
+
+.page-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0 0 0.25rem;
+}
+
+.page-subtitle {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Table */
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  background: rgba(30, 41, 59, 0.5);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.data-table thead {
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.data-table th {
+  text-align: left;
+  padding: 0.85rem 1rem;
+  color: #94a3b8;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.data-table td {
+  padding: 0.75rem 1rem;
+  color: #cbd5e1;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.06);
+}
+
+.data-table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.data-table tbody tr:hover {
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.room-number {
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.price {
+  font-weight: 600;
+  color: #a5b4fc;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.badge-type {
+  background: rgba(99, 102, 241, 0.12);
+  color: #a5b4fc;
+}
+
+.badge-available {
+  background: rgba(52, 211, 153, 0.12);
+  color: #6ee7b7;
+}
+
+.badge-occupied {
+  background: rgba(251, 113, 133, 0.12);
+  color: #fda4af;
+}
+
+/* Loading */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 0;
+  color: #94a3b8;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(99, 102, 241, 0.15);
+  border-top-color: #818cf8;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error */
+.error-state {
+  text-align: center;
+  padding: 4rem 1rem;
+}
+
+.error-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.error-state h2 {
+  color: #fda4af;
+  font-size: 1.3rem;
+  margin: 0 0 0.5rem;
+}
+
+.error-state p {
+  color: #94a3b8;
+  margin: 0 0 0.4rem;
+}
+
+.error-hint {
+  font-size: 0.85rem;
+}
+
+.error-hint code {
+  background: rgba(99, 102, 241, 0.1);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  color: #a5b4fc;
+  font-size: 0.82rem;
+}
+
+/* Empty */
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: #64748b;
+}
+
+@media (max-width: 600px) {
+  .page-container {
+    padding: 1rem;
+  }
+  .page-title {
+    font-size: 1.4rem;
+  }
+}

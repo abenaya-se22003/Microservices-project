@@ -1,0 +1,76 @@
+.dashboard-page .page-header {
+  margin-bottom: 2rem;
+}
+.dashboard-page .page-header h1 {
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin-bottom: 0.2rem;
+}
+.dashboard-page .page-header p {
+  color: var(--text-muted);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+}
+
+.stat-card__icon {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.stat-card__icon--rooms {
+  background: rgba(99, 102, 241, 0.1);
+}
+.stat-card__icon--guests {
+  background: rgba(52, 211, 153, 0.1);
+}
+.stat-card__icon--reservations {
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.stat-card__info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-card__value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-card__label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+}
+
+.dashboard-tip {
+  padding: 1.5rem;
+}
+.dashboard-tip h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+.dashboard-tip p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
