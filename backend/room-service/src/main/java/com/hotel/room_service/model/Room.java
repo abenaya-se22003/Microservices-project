@@ -13,17 +13,19 @@ public class Room {
     private Long id;
 
     private String roomNumber;
-    private String roomType; // e.g., Single, Double
-    private double pricePerNight;
+    private String roomType;
+    private Double price;
+    private boolean isAvailable;
 
     // Default constructor is required by JPA
     public Room() {
     }
 
-    public Room(String roomNumber, String roomType, double pricePerNight) {
+    public Room(String roomNumber, String roomType, Double price, boolean isAvailable) {
         this.roomNumber = roomNumber;
         this.roomType = roomType;
-        this.pricePerNight = pricePerNight;
+        this.price = price;
+        this.isAvailable = isAvailable;
     }
 
     public Long getId() {
@@ -50,11 +52,19 @@ public class Room {
         this.roomType = roomType;
     }
 
-    public double getPricePerNight() {
-        return pricePerNight;
+    public Double getPrice() {
+        return price;
     }
 
-    public void setPricePerNight(double pricePerNight) {
-        this.pricePerNight = pricePerNight;
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean isAvailable) {
+        this.isAvailable = isAvailable;
     }
 }

@@ -32,7 +32,7 @@ public class ReservationService {
         GuestDto guest = guestClient.getGuestById(reservation.getGuestId());
 
         // 3. If both exist (no errors thrown by Feign), we save the reservation!
-        System.out.println("Booking confirmed for " + guest.getFirstName() + " in Room " + room.getRoomNumber());
+        System.out.println("Booking confirmed for " + guest.getFullName() + " in Room " + room.getRoomNumber());
         return reservationRepository.save(reservation);
     }
 
