@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/axiosConfig';
 import './BookingForm.css';
 
@@ -7,19 +8,23 @@ function BookingForm() {
   var params = useParams();
   var location = useLocation();
   var navigate = useNavigate();
+  var { user } = useAuth();
   var roomId = params.roomId;
   var room = location.state && location.state.room;
 
   var [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
     checkInDate: '',
     checkOutDate: '',
   });
   var [submitting, setSubmitting] = useState(false);
   var [success, setSuccess] = useState(false);
   var [error, setError] = useState(null);
+
+  // If not logged in, redirect to login with return URL
+  if (!user) {
+    navigate('/login?redirect=/book/' + roomId, { replace: true });
+    return null;
+  }
 
   function handleChange(e) {
     setForm(function (prev) {
@@ -35,27 +40,15 @@ function BookingForm() {
     setSubmitting(true);
     setError(null);
 
-    // Step 1: Register the guest
-    var guestPayload = {
-      name: form.name,
-      email: form.email,
-      phone: form.phone,
+    // Directly create the reservation using the session's guestId
+    var reservationPayload = {
+      roomId: Number(roomId),
+      guestId: user.guestId,
+      checkInDate: form.checkInDate,
+      checkOutDate: form.checkOutDate,
     };
 
-    api.post('/api/guests', guestPayload)
-      .then(function (guestRes) {
-        var guestId = guestRes.data.id;
-
-        // Step 2: Create the reservation
-        var reservationPayload = {
-          roomId: Number(roomId),
-          guestId: guestId,
-          checkInDate: form.checkInDate,
-          checkOutDate: form.checkOutDate,
-        };
-
-        return api.post('/api/reservations', reservationPayload);
-      })
+    api.post('/api/reservations', reservationPayload)
       .then(function () {
         setSuccess(true);
         setSubmitting(false);
@@ -88,7 +81,7 @@ function BookingForm() {
             <p><strong>Room:</strong> {room ? room.roomNumber : roomId}</p>
             <p><strong>Check-in:</strong> {form.checkInDate}</p>
             <p><strong>Check-out:</strong> {form.checkOutDate}</p>
-            <p><strong>Guest:</strong> {form.name}</p>
+            <p><strong>Guest:</strong> {user.fullName}</p>
           </div>
           <div className="success-actions">
             <button className="btn btn-primary" onClick={function () { navigate('/rooms'); }}>
@@ -133,7 +126,15 @@ function BookingForm() {
         {/* Booking Form */}
         <form className="booking-form card" onSubmit={handleSubmit} id="booking-form">
           <h2>Complete Your Booking</h2>
-          <p className="form-description">Enter your details to finalize the reservation.</p>
+
+          {/* Booking-as info bar */}
+          <div className="booking-as-bar">
+            <span className="booking-as-avatar">{user.fullName.charAt(0).toUpperCase()}</span>
+            <div className="booking-as-info">
+              <span className="booking-as-name">{user.fullName}</span>
+              <span className="booking-as-email">{user.email}</span>
+            </div>
+          </div>
 
           {error && (
             <div className="alert alert-error">
@@ -142,47 +143,6 @@ function BookingForm() {
           )}
 
           <div className="form-grid">
-            <div className="form-group">
-              <label className="form-label" htmlFor="name">Full Name *</label>
-              <input
-                id="name"
-                name="name"
-                className="form-input"
-                type="text"
-                placeholder="John Doe"
-                value={form.name}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label" htmlFor="email">Email *</label>
-              <input
-                id="email"
-                name="email"
-                className="form-input"
-                type="email"
-                placeholder="john@example.com"
-                value={form.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label" htmlFor="phone">Phone</label>
-              <input
-                id="phone"
-                name="phone"
-                className="form-input"
-                type="tel"
-                placeholder="+1 234 567 8900"
-                value={form.phone}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              {/* empty spacer on desktop */}
-            </div>
             <div className="form-group">
               <label className="form-label" htmlFor="checkInDate">Check-in Date *</label>
               <input

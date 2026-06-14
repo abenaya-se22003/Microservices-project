@@ -4,6 +4,8 @@ import AdminLayout from './layouts/AdminLayout';
 import Home from './pages/Home';
 import RoomListing from './pages/RoomListing';
 import BookingForm from './pages/BookingForm';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 import Dashboard from './pages/admin/Dashboard';
 import ManageRooms from './pages/admin/ManageRooms';
 import ManageGuests from './pages/admin/ManageGuests';
@@ -19,6 +21,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/rooms" element={<RoomListing />} />
           <Route path="/book/:roomId" element={<BookingForm />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
         </Route>
 
         {/* Admin Flow */}

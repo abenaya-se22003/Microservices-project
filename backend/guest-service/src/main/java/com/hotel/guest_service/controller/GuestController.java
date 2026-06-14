@@ -1,5 +1,6 @@
 package com.hotel.guest_service.controller;
 
+import com.hotel.guest_service.dto.LoginRequest;
 import com.hotel.guest_service.model.Guest;
 import com.hotel.guest_service.service.GuestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,4 +36,18 @@ public class GuestController {
         Guest guest = guestService.getGuestById(id);
         return ResponseEntity.ok(guest);
     }
-}
+
+    // POST /api/guests/signup — Register a new user
+    @PostMapping("/signup")
+    public ResponseEntity<Guest> signup(@RequestBody Guest guest) {
+        Guest savedGuest = guestService.signup(guest);
+        return new ResponseEntity<>(savedGuest, HttpStatus.CREATED);
+    }
+
+    // POST /api/guests/login — Authenticate a user
+    @PostMapping("/login")
+    public ResponseEntity<Guest> login(@RequestBody LoginRequest loginRequest) {
+        Guest guest = guestService.login(loginRequest.getEmail(), loginRequest.getPassword());
+        return ResponseEntity.ok(guest);
+    }
+}
