@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/guests")
@@ -49,5 +50,20 @@ public class GuestController {
     public ResponseEntity<Guest> login(@RequestBody LoginRequest loginRequest) {
         Guest guest = guestService.login(loginRequest.getEmail(), loginRequest.getPassword());
         return ResponseEntity.ok(guest);
+    }
+
+    // PUT /api/guests/{id}/role — Update a guest's role
+    @PutMapping("/{id}/role")
+    public ResponseEntity<Guest> updateRole(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String newRole = body.get("role");
+        Guest updated = guestService.updateRole(id, newRole);
+        return ResponseEntity.ok(updated);
+    }
+
+    // DELETE /api/guests/{id} — Delete a guest
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteGuest(@PathVariable Long id) {
+        guestService.deleteGuest(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import PublicLayout from './layouts/PublicLayout';
 import AdminLayout from './layouts/AdminLayout';
+import AdminRoute from './components/AdminRoute';
 import Home from './pages/Home';
 import RoomListing from './pages/RoomListing';
 import BookingForm from './pages/BookingForm';
@@ -25,8 +26,8 @@ function App() {
           <Route path="/signup" element={<Signup />} />
         </Route>
 
-        {/* Admin Flow */}
-        <Route path="/admin" element={<AdminLayout />}>
+        {/* Admin Flow — protected by AdminRoute */}
+        <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
           <Route index element={<Dashboard />} />
           <Route path="rooms" element={<ManageRooms />} />
           <Route path="guests" element={<ManageGuests />} />

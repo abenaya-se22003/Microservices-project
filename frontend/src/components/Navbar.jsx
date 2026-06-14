@@ -28,11 +28,15 @@ function Navbar() {
             Browse Rooms
           </NavLink>
         </li>
-        <li>
-          <NavLink to="/admin" className="nav-link nav-link--admin">
-            ⚙ Admin
-          </NavLink>
-        </li>
+
+        {/* Only show Admin link if user is an ADMIN */}
+        {user && user.role === 'ADMIN' && (
+          <li>
+            <NavLink to="/admin" className="nav-link nav-link--admin">
+              ⚙ Admin
+            </NavLink>
+          </li>
+        )}
 
         {/* Auth section */}
         {user ? (
@@ -40,6 +44,9 @@ function Navbar() {
             <span className="nav-user-greeting">
               <span className="nav-user-avatar">{user.fullName.charAt(0).toUpperCase()}</span>
               <span className="nav-user-name">{user.fullName}</span>
+              {user.role === 'ADMIN' && (
+                <span className="badge badge-accent nav-role-badge">ADMIN</span>
+              )}
             </span>
             <button className="btn btn-sm nav-logout-btn" onClick={handleLogout} id="logout-btn">
               Logout

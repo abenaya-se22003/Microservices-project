@@ -38,6 +38,8 @@ public class GuestService {
         if (existing.isPresent()) {
             throw new IllegalArgumentException("A guest with this email already exists.");
         }
+        // Ensure new signups always start as USER
+        guest.setRole("USER");
         return guestRepository.save(guest);
     }
 
@@ -51,5 +53,21 @@ public class GuestService {
         }
 
         return guest;
+    }
+
+    // Update a guest's role (USER <-> ADMIN)
+    public Guest updateRole(Long id, String newRole) {
+        Guest guest = guestRepository.findById(id)
+                .orElseThrow(() -> new GuestNotFoundException(id));
+        guest.setRole(newRole);
+        return guestRepository.save(guest);
+    }
+
+    // Delete a guest
+    public void deleteGuest(Long id) {
+        if (!guestRepository.existsById(id)) {
+            throw new GuestNotFoundException(id);
+        }
+        guestRepository.deleteById(id);
     }
 }

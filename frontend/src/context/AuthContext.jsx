@@ -22,6 +22,7 @@ function AuthProvider({ children }) {
       guestId: userData.id,
       fullName: userData.fullName,
       email: userData.email,
+      role: userData.role || 'USER',
     };
     setUser(sessionData);
     localStorage.setItem('hotelHub_user', JSON.stringify(sessionData));

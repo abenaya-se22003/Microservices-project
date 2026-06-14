@@ -24,6 +24,8 @@ public class Guest {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    private String role = "USER";
+
     public Guest() {}
 
     public Guest(String fullName, String email, String phone, String password) {
@@ -31,6 +33,7 @@ public class Guest {
         this.email = email;
         this.phone = phone;
         this.password = password;
+        this.role = "USER";
     }
 
     // Getters and Setters
@@ -44,4 +47,6 @@ public class Guest {
     public void setPhone(String phone) { this.phone = phone; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }
