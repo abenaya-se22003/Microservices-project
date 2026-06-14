@@ -9,12 +9,23 @@ function ManageRooms() {
   var [formMsg, setFormMsg] = useState(null);
   var [submitting, setSubmitting] = useState(false);
 
+  // Add Room form state
   var [form, setForm] = useState({
     roomNumber: '',
-    type: 'Single',
+    roomType: 'Single',
     price: '',
     available: true,
   });
+
+  // Edit state: which room ID is being edited, and edit form values
+  var [editingId, setEditingId] = useState(null);
+  var [editForm, setEditForm] = useState({
+    roomNumber: '',
+    roomType: '',
+    price: '',
+    available: true,
+  });
+  var [editSubmitting, setEditSubmitting] = useState(false);
 
   function fetchRooms() {
     api.get('/api/rooms')
@@ -35,6 +46,17 @@ function ManageRooms() {
     });
   }
 
+  function handleEditChange(e) {
+    var name = e.target.name;
+    var value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    setEditForm(function (prev) {
+      var updated = {};
+      for (var k in prev) updated[k] = prev[k];
+      updated[name] = value;
+      return updated;
+    });
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
     setSubmitting(true);
@@ -42,7 +64,7 @@ function ManageRooms() {
 
     var payload = {
       roomNumber: form.roomNumber,
-      type: form.type,
+      roomType: form.roomType,
       price: Number(form.price),
       available: form.available,
     };
@@ -50,7 +72,7 @@ function ManageRooms() {
     api.post('/api/rooms', payload)
       .then(function () {
         setFormMsg({ type: 'success', text: 'Room added successfully!' });
-        setForm({ roomNumber: '', type: 'Single', price: '', available: true });
+        setForm({ roomNumber: '', roomType: 'Single', price: '', available: true });
         setSubmitting(false);
         fetchRooms();
       })
@@ -62,11 +84,50 @@ function ManageRooms() {
       });
   }
 
+  function startEdit(room) {
+    setEditingId(room.id);
+    setEditForm({
+      roomNumber: room.roomNumber || '',
+      roomType: room.roomType || 'Single',
+      price: room.price != null ? String(room.price) : '',
+      available: room.available === true,
+    });
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditForm({ roomNumber: '', roomType: '', price: '', available: true });
+  }
+
+  function handleEditSave(roomId) {
+    setEditSubmitting(true);
+
+    var payload = {
+      roomNumber: editForm.roomNumber,
+      roomType: editForm.roomType,
+      price: Number(editForm.price),
+      available: editForm.available,
+    };
+
+    api.put('/api/rooms/' + roomId, payload)
+      .then(function () {
+        setEditingId(null);
+        setEditSubmitting(false);
+        fetchRooms();
+      })
+      .catch(function (err) {
+        var msg = err.response && err.response.data && err.response.data.message
+          ? err.response.data.message : err.message;
+        alert('Failed to update room: ' + msg);
+        setEditSubmitting(false);
+      });
+  }
+
   return (
     <div className="manage-rooms-page" id="manage-rooms">
       <div className="page-header">
         <h1>🛏️ Manage Rooms</h1>
-        <p>View all rooms and add new ones.</p>
+        <p>View all rooms, edit details, and add new ones.</p>
       </div>
 
       {/* Add Room Form */}
@@ -86,8 +147,8 @@ function ManageRooms() {
               placeholder="101" value={form.roomNumber} onChange={handleChange} required />
           </div>
           <div className="form-group">
-            <label className="form-label" htmlFor="type">Room Type</label>
-            <select id="type" name="type" className="form-select" value={form.type} onChange={handleChange}>
+            <label className="form-label" htmlFor="roomType">Room Type</label>
+            <select id="roomType" name="roomType" className="form-select" value={form.roomType} onChange={handleChange}>
               <option value="Single">Single</option>
               <option value="Double">Double</option>
               <option value="Suite">Suite</option>
@@ -134,20 +195,103 @@ function ManageRooms() {
                 <th>Type</th>
                 <th>Price</th>
                 <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {rooms.length === 0 ? (
-                <tr><td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>No rooms found.</td></tr>
+                <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No rooms found.</td></tr>
               ) : rooms.map(function (room) {
-                var available = room.available === true || room.status === 'AVAILABLE';
+                var isEditing = editingId === room.id;
+
+                if (isEditing) {
+                  return (
+                    <tr key={room.id} className="editing-row">
+                      <td>{room.id}</td>
+                      <td>
+                        <input
+                          name="roomNumber"
+                          className="form-input form-input--inline"
+                          type="text"
+                          value={editForm.roomNumber}
+                          onChange={handleEditChange}
+                          required
+                        />
+                      </td>
+                      <td>
+                        <select
+                          name="roomType"
+                          className="form-select form-select--inline"
+                          value={editForm.roomType}
+                          onChange={handleEditChange}
+                        >
+                          <option value="Single">Single</option>
+                          <option value="Double">Double</option>
+                          <option value="Suite">Suite</option>
+                          <option value="Deluxe">Deluxe</option>
+                          <option value="Penthouse">Penthouse</option>
+                        </select>
+                      </td>
+                      <td>
+                        <input
+                          name="price"
+                          className="form-input form-input--inline"
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={editForm.price}
+                          onChange={handleEditChange}
+                          required
+                        />
+                      </td>
+                      <td>
+                        <label className="toggle">
+                          <input
+                            type="checkbox"
+                            name="available"
+                            checked={editForm.available}
+                            onChange={handleEditChange}
+                          />
+                          <span className="toggle-slider"></span>
+                        </label>
+                      </td>
+                      <td className="actions-cell">
+                        <button
+                          className="btn btn-sm btn-primary"
+                          onClick={function () { handleEditSave(room.id); }}
+                          disabled={editSubmitting}
+                        >
+                          {editSubmitting ? 'Saving…' : '💾 Save'}
+                        </button>
+                        <button
+                          className="btn btn-sm btn-secondary"
+                          onClick={cancelEdit}
+                          disabled={editSubmitting}
+                        >
+                          ✕ Cancel
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                }
+
+                var available = room.available === true;
                 return (
                   <tr key={room.id}>
                     <td>{room.id}</td>
                     <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{room.roomNumber}</td>
-                    <td><span className="badge badge-accent">{room.type || room.roomType || '—'}</span></td>
-                    <td style={{ fontWeight: 600, color: 'var(--accent-hover)' }}>{'$' + (room.price || room.pricePerNight || '—')}</td>
+                    <td><span className="badge badge-accent">{room.roomType || '—'}</span></td>
+                    <td style={{ fontWeight: 600, color: 'var(--accent-hover)' }}>{'$' + (room.price != null ? room.price : '—')}</td>
                     <td><span className={'badge ' + (available ? 'badge-success' : 'badge-danger')}>{available ? 'Available' : 'Occupied'}</span></td>
+                    <td className="actions-cell">
+                      <button
+                        className="btn btn-sm btn-secondary"
+                        onClick={function () { startEdit(room); }}
+                        title="Edit this room"
+                      >
+                        ✏️ Edit
+                      </button>
+                    </td>
                   </tr>
                 );
               })}

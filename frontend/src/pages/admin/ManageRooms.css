@@ -80,3 +80,47 @@
 .toggle input:checked + .toggle-slider::before {
   transform: translateX(18px);
 }
+
+/* ─── Inline Edit Row ──────────────────── */
+
+.editing-row {
+  background: rgba(99, 102, 241, 0.04) !important;
+}
+
+.editing-row td {
+  vertical-align: middle;
+}
+
+.form-input--inline,
+.form-select--inline {
+  font-family: inherit;
+  font-size: 0.82rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  transition: border-color var(--transition-fast);
+  outline: none;
+  width: 100%;
+  min-width: 70px;
+}
+
+.form-input--inline:focus,
+.form-select--inline:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+/* Actions column */
+.actions-cell {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.actions-cell .btn {
+  white-space: nowrap;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.65rem;
+}
