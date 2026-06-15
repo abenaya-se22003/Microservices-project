@@ -43,15 +43,14 @@ function Signup() {
 
     setSubmitting(true);
 
-    api.post('/api/guests/signup', {
+    api.post('/auth/register', {
       fullName: form.fullName,
       email: form.email,
-      phone: form.phone || null,
       password: form.password,
     })
       .then(function (res) {
-        // Auto-login after successful signup
-        login(res.data);
+        // Auto-login after successful signup — store the JWT token
+        login(res.data.token);
         navigate('/', { replace: true });
       })
       .catch(function (err) {

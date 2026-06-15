@@ -40,10 +40,10 @@ function BookingForm() {
     setSubmitting(true);
     setError(null);
 
-    // Directly create the reservation using the session's guestId
+    // The guestId is automatically injected by the API Gateway (from the JWT token)
+    // as the X-User-Id header — no need to send it from the frontend!
     var reservationPayload = {
       roomId: Number(roomId),
-      guestId: user.guestId,
       checkInDate: form.checkInDate,
       checkOutDate: form.checkOutDate,
     };

@@ -30,12 +30,13 @@ function Login() {
     setSubmitting(true);
     setError(null);
 
-    api.post('/api/guests/login', {
+    api.post('/auth/login', {
       email: form.email,
       password: form.password,
     })
       .then(function (res) {
-        login(res.data);
+        // res.data = { token: "eyJhbG..." }
+        login(res.data.token);
         // Redirect to the page they were trying to visit, or home
         var redirect = searchParams.get('redirect') || '/';
         navigate(redirect, { replace: true });

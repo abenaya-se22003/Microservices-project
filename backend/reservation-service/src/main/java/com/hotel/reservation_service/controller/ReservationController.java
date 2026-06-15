@@ -14,8 +14,17 @@ public class ReservationController {
     @Autowired
     private ReservationService reservationService;
 
+    /**
+     * Create a new reservation.
+     * The guestId is NOT in the request body — it comes from the X-User-Id header
+     * that the API Gateway's AuthenticationFilter injects after validating the JWT token.
+     * This is more secure: the frontend cannot spoof another user's ID.
+     */
     @PostMapping
-    public Reservation createReservation(@RequestBody Reservation reservation) {
+    public Reservation createReservation(
+            @RequestBody Reservation reservation,
+            @RequestHeader("X-User-Id") Long userId) {
+        reservation.setGuestId(userId);
         return reservationService.bookRoom(reservation);
     }
 
