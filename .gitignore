@@ -1,5 +1,23 @@
-# Maven
+# ========================================
+#  HotelHub Microservices — .gitignore
+# ========================================
+
+# ---------- Environment / Secrets ----------
+# CRITICAL: Never commit .env files containing passwords, API keys, or secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ---------- Java / Maven ----------
 target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+*.class
+*.jar
+*.war
+*.ear
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -8,26 +26,25 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timeline.xml
-.mvn/wrapper/maven-wrapper.jar
 
-# IntelliJ IDEA
+# ---------- IDE — IntelliJ IDEA ----------
 .idea/
 *.iws
 *.iml
 *.ipr
 out/
 
-# VS Code
+# ---------- IDE — VS Code ----------
 .vscode/
 
-# Eclipse
+# ---------- IDE — Eclipse ----------
 .project
 .classpath
 .settings/
 .metadata/
 bin/
 
-# NetBeans
+# ---------- IDE — NetBeans ----------
 /nbproject/private/
 /nbbuild/
 /dist/
@@ -35,9 +52,19 @@ bin/
 /.nb-gradle/
 build/
 
-# OS specific
+# ---------- Node / React ----------
+node_modules/
+dist/
+.cache/
+*.tsbuildinfo
+
+# ---------- OS Files ----------
 .DS_Store
 Thumbs.db
+Desktop.ini
+*.swp
+*~
 
-# Log files
+# ---------- Logs ----------
 *.log
+logs/

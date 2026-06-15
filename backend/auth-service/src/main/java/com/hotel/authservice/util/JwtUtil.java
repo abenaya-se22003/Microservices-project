@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -24,14 +25,15 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    // Base64-encoded 256-bit secret key (for development only — externalize in production)
-    private static final String SECRET = "aG90ZWxIdWJTZWNyZXRLZXlGb3JKV1RUb2tlblNpZ25pbmcyMDI2";
+    // Injected from application.properties → jwt.secret → JWT_SECRET env var
+    @Value("${jwt.secret}")
+    private String secret;
 
     // Token validity: 24 hours
     private static final long EXPIRATION_MS = 1000 * 60 * 60 * 24;
 
     private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET);
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
