@@ -17,7 +17,7 @@ function ManageGuests() {
   });
 
   function fetchGuests() {
-    api.get('/api/guests')
+    api.get('/auth/users')
       .then(function (res) { setGuests(res.data); setLoading(false); })
       .catch(function (err) { setError(err.message); setLoading(false); });
   }
@@ -40,7 +40,7 @@ function ManageGuests() {
     setSubmitting(true);
     setFormMsg(null);
 
-    api.post('/api/guests/signup', {
+    api.post('/auth/register', {
       fullName: form.fullName,
       email: form.email,
       phone: form.phone || null,
@@ -201,3 +201,4 @@ function ManageGuests() {
 }
 
 export default ManageGuests;
+

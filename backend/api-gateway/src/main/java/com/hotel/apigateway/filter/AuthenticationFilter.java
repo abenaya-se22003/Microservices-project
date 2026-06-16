@@ -43,8 +43,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         String path = request.getURI().getPath();
         HttpMethod method = request.getMethod();
 
-        // Auth endpoints are always public
-        if (path.startsWith("/auth/")) {
+        // Only specific auth endpoints are public (not /auth/users)
+        if (path.equals("/auth/register") || path.equals("/auth/login") || path.equals("/auth/validate")) {
             return true;
         }
 
@@ -54,6 +54,14 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         }
 
         return false;
+    }
+
+    /**
+     * Check if the request path requires ADMIN role.
+     */
+    private boolean requiresAdminRole(ServerHttpRequest request) {
+        String path = request.getURI().getPath();
+        return path.equals("/auth/users");
     }
 
     @Override
@@ -91,6 +99,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                     String userId = String.valueOf(claims.get("userId"));
                     String role = String.valueOf(claims.get("role"));
 
+                    // 4b. Check if the route requires ADMIN role
+                    if (requiresAdminRole(request) && !"ADMIN".equals(role)) {
+                        return onForbidden(exchange, "Admin access required");
+                    }
+
                     // Mutate the request to add custom headers for downstream services
                     ServerHttpRequest mutatedRequest = request.mutate()
                             .header("X-User-Id", userId)
@@ -114,6 +127,18 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
      */
     private Mono<Void> onUnauthorized(ServerWebExchange exchange, String message) {
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+        exchange.getResponse().getHeaders().add("Content-Type", "application/json");
+        byte[] bytes = ("{\"message\":\"" + message + "\"}").getBytes();
+        return exchange.getResponse().writeWith(
+                Mono.just(exchange.getResponse().bufferFactory().wrap(bytes))
+        );
+    }
+
+    /**
+     * Return a 403 Forbidden response.
+     */
+    private Mono<Void> onForbidden(ServerWebExchange exchange, String message) {
+        exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
         exchange.getResponse().getHeaders().add("Content-Type", "application/json");
         byte[] bytes = ("{\"message\":\"" + message + "\"}").getBytes();
         return exchange.getResponse().writeWith(

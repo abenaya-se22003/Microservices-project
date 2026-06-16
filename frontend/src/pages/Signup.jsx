@@ -46,6 +46,7 @@ function Signup() {
     api.post('/auth/register', {
       fullName: form.fullName,
       email: form.email,
+      phone: form.phone || null,
       password: form.password,
     })
       .then(function (res) {

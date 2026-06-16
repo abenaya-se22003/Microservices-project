@@ -3,11 +3,13 @@ package com.hotel.authservice.controller;
 import com.hotel.authservice.dto.AuthResponse;
 import com.hotel.authservice.dto.LoginRequest;
 import com.hotel.authservice.dto.RegisterRequest;
+import com.hotel.authservice.dto.UserDTO;
 import com.hotel.authservice.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -64,5 +66,16 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Invalid or expired token"));
         }
+    }
+
+    /**
+     * GET /auth/users
+     * Returns all registered users (id, fullName, email, phone, role).
+     * Protected at the API Gateway level — requires an ADMIN JWT token.
+     */
+    @GetMapping("/users")
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = authService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 }

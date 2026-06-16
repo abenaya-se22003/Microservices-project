@@ -3,6 +3,7 @@ package com.hotel.authservice.service;
 import com.hotel.authservice.dto.AuthResponse;
 import com.hotel.authservice.dto.LoginRequest;
 import com.hotel.authservice.dto.RegisterRequest;
+import com.hotel.authservice.dto.UserDTO;
 import com.hotel.authservice.model.Role;
 import com.hotel.authservice.model.User;
 import com.hotel.authservice.repository.AuthRepository;
@@ -11,7 +12,9 @@ import io.jsonwebtoken.Claims;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -40,6 +43,7 @@ public class AuthService {
         User user = new User();
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
+        user.setPhone(request.getPhone());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.USER);
 
@@ -90,5 +94,24 @@ public class AuthService {
         result.put("email", claims.get("email"));
 
         return result;
+    }
+
+    /**
+     * Retrieve all registered users as DTOs (excludes password).
+     * Used by the Admin dashboard to display the guest list.
+     */
+    public List<UserDTO> getAllUsers() {
+        List<User> users = authRepository.findAll();
+        List<UserDTO> dtos = new ArrayList<>();
+        for (User u : users) {
+            dtos.add(new UserDTO(
+                    u.getId(),
+                    u.getFullName(),
+                    u.getEmail(),
+                    u.getPhone(),
+                    u.getRole().name()
+            ));
+        }
+        return dtos;
     }
 }
