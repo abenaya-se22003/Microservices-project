@@ -114,4 +114,21 @@ public class AuthService {
         }
         return dtos;
     }
+
+    /**
+     * Retrieve a single user by ID as a DTO (excludes password).
+     * Used by other microservices (e.g., reservation-service) to verify a user exists.
+     */
+    public UserDTO getUserById(Long id) {
+        User user = authRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+
+        return new UserDTO(
+                user.getId(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getPhone(),
+                user.getRole().name()
+        );
+    }
 }

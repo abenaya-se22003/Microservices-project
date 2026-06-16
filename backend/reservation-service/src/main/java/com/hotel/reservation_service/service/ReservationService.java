@@ -28,7 +28,7 @@ public class ReservationService {
         // 1. Ask the Room Service if the room exists
         RoomDto room = roomClient.getRoomById(reservation.getRoomId());
 
-        // 2. Ask the Guest Service if the guest exists
+        // 2. Ask the Auth Service if the user exists
         GuestDto guest = guestClient.getGuestById(reservation.getGuestId());
 
         // 3. If both exist (no errors thrown by Feign), we save the reservation!

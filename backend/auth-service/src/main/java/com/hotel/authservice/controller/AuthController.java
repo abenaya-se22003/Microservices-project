@@ -78,4 +78,20 @@ public class AuthController {
         List<UserDTO> users = authService.getAllUsers();
         return ResponseEntity.ok(users);
     }
+
+    /**
+     * GET /auth/users/{id}
+     * Returns a single user's details by their ID.
+     * Used by other microservices (e.g., reservation-service) to look up users.
+     */
+    @GetMapping("/users/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable("id") Long id) {
+        try {
+            UserDTO user = authService.getUserById(id);
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", e.getMessage()));
+        }
+    }
 }
