@@ -15,6 +15,7 @@ function ManageRooms() {
     roomType: 'Single',
     price: '',
     available: true,
+    imageUrl: '',
   });
 
   // Edit state: which room ID is being edited, and edit form values
@@ -24,6 +25,7 @@ function ManageRooms() {
     roomType: '',
     price: '',
     available: true,
+    imageUrl: '',
   });
   var [editSubmitting, setEditSubmitting] = useState(false);
 
@@ -67,12 +69,13 @@ function ManageRooms() {
       roomType: form.roomType,
       price: Number(form.price),
       available: form.available,
+      imageUrl: form.imageUrl,
     };
 
     api.post('/api/rooms', payload)
       .then(function () {
         setFormMsg({ type: 'success', text: 'Room added successfully!' });
-        setForm({ roomNumber: '', roomType: 'Single', price: '', available: true });
+        setForm({ roomNumber: '', roomType: 'Single', price: '', available: true, imageUrl: '' });
         setSubmitting(false);
         fetchRooms();
       })
@@ -91,12 +94,13 @@ function ManageRooms() {
       roomType: room.roomType || 'Single',
       price: room.price != null ? String(room.price) : '',
       available: room.available === true,
+      imageUrl: room.imageUrl || '',
     });
   }
 
   function cancelEdit() {
     setEditingId(null);
-    setEditForm({ roomNumber: '', roomType: '', price: '', available: true });
+    setEditForm({ roomNumber: '', roomType: '', price: '', available: true, imageUrl: '' });
   }
 
   function handleEditSave(roomId) {
@@ -107,6 +111,7 @@ function ManageRooms() {
       roomType: editForm.roomType,
       price: Number(editForm.price),
       available: editForm.available,
+      imageUrl: editForm.imageUrl,
     };
 
     api.put('/api/rooms/' + roomId, payload)
@@ -161,6 +166,11 @@ function ManageRooms() {
             <input id="price" name="price" className="form-input" type="number" min="0" step="0.01"
               placeholder="150" value={form.price} onChange={handleChange} required />
           </div>
+          <div className="form-group">
+            <label className="form-label" htmlFor="imageUrl">Image URL</label>
+            <input id="imageUrl" name="imageUrl" className="form-input" type="text"
+              placeholder="https://example.com/image.jpg" value={form.imageUrl} onChange={handleChange} />
+          </div>
           <div className="form-group form-group--inline">
             <label className="form-label">Available</label>
             <label className="toggle">
@@ -194,6 +204,7 @@ function ManageRooms() {
                 <th>Room Number</th>
                 <th>Type</th>
                 <th>Price</th>
+                <th>Image URL</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -245,6 +256,16 @@ function ManageRooms() {
                         />
                       </td>
                       <td>
+                        <input
+                          name="imageUrl"
+                          className="form-input form-input--inline"
+                          type="text"
+                          placeholder="Image URL"
+                          value={editForm.imageUrl}
+                          onChange={handleEditChange}
+                        />
+                      </td>
+                      <td>
                         <label className="toggle">
                           <input
                             type="checkbox"
@@ -282,6 +303,9 @@ function ManageRooms() {
                     <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{room.roomNumber}</td>
                     <td><span className="badge badge-accent">{room.roomType || '—'}</span></td>
                     <td style={{ fontWeight: 600, color: 'var(--accent-hover)' }}>{'$' + (room.price != null ? room.price : '—')}</td>
+                    <td style={{ fontSize: '0.8rem', color: 'var(--text-muted)', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={room.imageUrl}>
+                      {room.imageUrl || <span style={{ fontStyle: 'italic', opacity: 0.5 }}>None</span>}
+                    </td>
                     <td><span className={'badge ' + (available ? 'badge-success' : 'badge-danger')}>{available ? 'Available' : 'Occupied'}</span></td>
                     <td className="actions-cell">
                       <button
