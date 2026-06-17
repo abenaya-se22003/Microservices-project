@@ -20,9 +20,8 @@ function BookingForm() {
   var [success, setSuccess] = useState(false);
   var [error, setError] = useState(null);
 
-  // If not logged in, redirect to login with return URL
+  // Safe fallback if user is not loaded
   if (!user) {
-    navigate('/login?redirect=/book/' + roomId, { replace: true });
     return null;
   }
 

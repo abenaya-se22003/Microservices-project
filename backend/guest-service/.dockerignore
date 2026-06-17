@@ -1,0 +1,8 @@
+# Spring Boot .dockerignore — place in each backend service root
+target/
+.idea/
+*.iml
+*.md
+HELP.md
+.gitignore
+.gitattributes

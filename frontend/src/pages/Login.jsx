@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axiosConfig';
 import './Auth.css';
 
 function Login() {
   var navigate = useNavigate();
+  var location = useLocation();
   var [searchParams] = useSearchParams();
   var { login } = useAuth();
 
@@ -37,9 +38,15 @@ function Login() {
       .then(function (res) {
         // res.data = { token: "eyJhbG..." }
         login(res.data.token);
+        
         // Redirect to the page they were trying to visit, or home
-        var redirect = searchParams.get('redirect') || '/';
-        navigate(redirect, { replace: true });
+        var from = '/';
+        if (location.state && location.state.from) {
+          from = location.state.from.pathname || location.state.from;
+        } else {
+          from = searchParams.get('redirect') || '/';
+        }
+        navigate(from, { replace: true });
       })
       .catch(function (err) {
         var message = 'Login failed. ';
@@ -114,7 +121,7 @@ function Login() {
 
         <div className="auth-footer">
           Don't have an account?{' '}
-          <Link to="/signup">Create one here</Link>
+          <Link to="/signup" state={location.state}>Create one here</Link>
         </div>
       </div>
     </div>

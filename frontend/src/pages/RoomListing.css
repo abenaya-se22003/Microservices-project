@@ -3,10 +3,42 @@
    ═══════════════════════════════════════════════════════ */
 
 .browse-rooms-page {
-  max-width: 1120px;
-  margin: 0 auto;
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - 64px);
   padding: 2.5rem 2rem 4rem;
+  overflow: hidden;
+  z-index: 1;
 }
+
+/* Beautiful ambient blurred background image of a luxury hotel lobby */
+.browse-rooms-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(to bottom, rgba(6, 8, 15, 0.78) 0%, rgba(6, 8, 15, 0.92) 100%),
+    url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  filter: blur(12px);
+  transform: scale(1.05); /* Slight scale to hide blurred outer edges */
+  z-index: -1;
+}
+
+.browse-header,
+.rooms-grid,
+.empty-state {
+  max-width: 1120px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
 
 /* ─── Page Header ─────────────────────────────────────── */
 .browse-header {

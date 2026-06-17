@@ -1,10 +1,225 @@
+# ══════════════════════════════════════════════════════════════════════
+#  HotelHub — Master Docker Compose
+#  Orchestrates: PostgreSQL, RabbitMQ, 6 Spring Boot microservices,
+#                and the React frontend served by Nginx.
+#
+#  Usage:
+#    docker compose up --build          # First run or after code changes
+#    docker compose up -d               # Subsequent runs (detached)
+#    docker compose down                # Stop all containers
+#    docker compose down -v             # Stop + wipe all data volumes
+#    docker compose logs -f <service>   # Tail logs for one service
+# ══════════════════════════════════════════════════════════════════════
+
 services:
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"      # AMQP protocol port (for Spring Boot services)
-      - "15672:15672"    # Management UI  (http://localhost:15672  guest/guest)
+
+  # ════════════════════════════════════════════════════════
+  #  INFRASTRUCTURE
+  # ════════════════════════════════════════════════════════
+
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: postgres-db
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-123456}
+      # No POSTGRES_DB set — our init script creates all four DBs
+    volumes:
+      # Persist database data across container restarts
+      - postgres_data:/var/lib/postgresql/data
+      # Mount init script — runs ONCE on first container startup
+      - ./scripts/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+    ports:
+      - "5432:5432"   # Exposed for local DB tooling (DBeaver, pgAdmin)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hotel-network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+    ports:
+      - "5672:5672"    # AMQP protocol port
+      - "15672:15672"  # Management UI -> http://localhost:15672
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+    networks:
+      - hotel-network
+
+  # ════════════════════════════════════════════════════════
+  #  BACKEND MICROSERVICES
+  # ════════════════════════════════════════════════════════
+
+  auth-service:
+    build:
+      context: ./backend/auth-service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    environment:
+      # Override application.properties ${DB_URL} placeholder
+      DB_URL: jdbc:postgresql://postgres-db:5432/auth_db
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-123456}
+      # Same JWT secret as application.properties default
+      JWT_SECRET: ${JWT_SECRET:-aG90ZWxIdWJTZWNyZXRLZXlGb3JKV1RUb2tlblNpZ25pbmcyMDI2}
+    ports:
+      - "8085:8085"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    networks:
+      - hotel-network
+    restart: on-failure
+
+  room-service:
+    build:
+      context: ./backend/room-service
+      dockerfile: Dockerfile
+    container_name: room-service
+    environment:
+      DB_URL: jdbc:postgresql://postgres-db:5432/room_db
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-123456}
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    networks:
+      - hotel-network
+    restart: on-failure
+
+  guest-service:
+    build:
+      context: ./backend/guest-service
+      dockerfile: Dockerfile
+    container_name: guest-service
+    environment:
+      DB_URL: jdbc:postgresql://postgres-db:5432/guest_db
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-123456}
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    networks:
+      - hotel-network
+    restart: on-failure
+
+  reservation-service:
+    build:
+      context: ./backend/reservation-service
+      dockerfile: Dockerfile
+    container_name: reservation-service
+    environment:
+      DB_URL: jdbc:postgresql://postgres-db:5432/reservation_db
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-123456}
+      # RabbitMQ connection (overrides application.properties 'localhost')
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_DEFAULT_USER:-guest}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_DEFAULT_PASS:-guest}
+      # Feign client URL overrides
+      # spring.cloud.openfeign.client.config.room-service.url
+      SPRING_CLOUD_OPENFEIGN_CLIENT_CONFIG_ROOM_SERVICE_URL: http://room-service:8081/api/rooms
+      # spring.cloud.openfeign.client.config.auth-service.url
+      SPRING_CLOUD_OPENFEIGN_CLIENT_CONFIG_AUTH_SERVICE_URL: http://auth-service:8085/auth/users
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      room-service:
+        condition: service_started
+      auth-service:
+        condition: service_started
+    networks:
+      - hotel-network
+    restart: on-failure
+
+  notification-service:
+    build:
+      context: ./backend/notification-service
+      dockerfile: Dockerfile
+    container_name: notification-service
+    environment:
+      # RabbitMQ connection (overrides application.properties 'localhost')
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_DEFAULT_USER:-guest}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_DEFAULT_PASS:-guest}
+    ports:
+      - "8086:8086"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - hotel-network
+    restart: on-failure
+
+  api-gateway:
+    build:
+      context: ./backend/api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    environment:
+      # Activates application-docker.properties — rewrites all
+      # localhost route URIs to use Docker container names.
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8080:8080"   # Single entry point for all browser API calls
+    depends_on:
+      - auth-service
+      - room-service
+      - guest-service
+      - reservation-service
+    networks:
+      - hotel-network
+    restart: on-failure
+
+  # ════════════════════════════════════════════════════════
+  #  FRONTEND
+  # ════════════════════════════════════════════════════════
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Browser (on the host machine) reaches api-gateway via
+        # its published host port 8080, so localhost:8080 is correct.
+        VITE_API_BASE_URL: http://localhost:8080
+    container_name: frontend
+    ports:
+      - "3000:80"   # Access the app at http://localhost:3000
+    depends_on:
+      - api-gateway
+    networks:
+      - hotel-network
+
+# ════════════════════════════════════════════════════════
+#  VOLUMES & NETWORKS
+# ════════════════════════════════════════════════════════
+
+volumes:
+  postgres_data:
+    name: hotelhub_postgres_data
+
+networks:
+  hotel-network:
+    name: hotelhub-network
+    driver: bridge

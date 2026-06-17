@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import PublicLayout from './layouts/PublicLayout';
 import AdminLayout from './layouts/AdminLayout';
 import AdminRoute from './components/AdminRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import RoomListing from './pages/RoomListing';
 import BookingForm from './pages/BookingForm';
@@ -21,7 +22,14 @@ function App() {
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/rooms" element={<RoomListing />} />
-          <Route path="/book/:roomId" element={<BookingForm />} />
+          <Route
+            path="/book/:roomId"
+            element={
+              <ProtectedRoute>
+                <BookingForm />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
         </Route>

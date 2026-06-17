@@ -4,19 +4,15 @@ import { getUserFromToken, isTokenExpired } from '../api/jwtUtils';
 var AuthContext = createContext(null);
 
 function AuthProvider({ children }) {
-  var [user, setUser] = useState(null);
-
-  // On mount, restore session from the stored JWT token
-  useEffect(function () {
+  var [user, setUser] = useState(function () {
     try {
       var token = localStorage.getItem('hotelHub_token');
       if (token && !isTokenExpired(token)) {
         var userData = getUserFromToken(token);
         if (userData) {
-          setUser(userData);
+          return userData;
         }
       } else if (token) {
-        // Token exists but is expired — clean up
         localStorage.removeItem('hotelHub_token');
         localStorage.removeItem('hotelHub_user');
       }
@@ -24,7 +20,8 @@ function AuthProvider({ children }) {
       localStorage.removeItem('hotelHub_token');
       localStorage.removeItem('hotelHub_user');
     }
-  }, []);
+    return null;
+  });
 
   /**
    * Called after successful login/register.

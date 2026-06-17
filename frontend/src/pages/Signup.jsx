@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axiosConfig';
 import './Auth.css';
 
 function Signup() {
   var navigate = useNavigate();
+  var location = useLocation();
   var { login } = useAuth();
 
   var [form, setForm] = useState({
@@ -52,7 +53,12 @@ function Signup() {
       .then(function (res) {
         // Auto-login after successful signup — store the JWT token
         login(res.data.token);
-        navigate('/', { replace: true });
+        
+        var from = '/';
+        if (location.state && location.state.from) {
+          from = location.state.from.pathname || location.state.from;
+        }
+        navigate(from, { replace: true });
       })
       .catch(function (err) {
         var message = 'Signup failed. ';
@@ -173,7 +179,7 @@ function Signup() {
 
         <div className="auth-footer">
           Already have an account?{' '}
-          <Link to="/login">Sign in here</Link>
+          <Link to="/login" state={location.state}>Sign in here</Link>
         </div>
       </div>
     </div>
