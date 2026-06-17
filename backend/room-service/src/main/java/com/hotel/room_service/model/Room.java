@@ -16,16 +16,18 @@ public class Room {
     private String roomType;
     private Double price;
     private boolean isAvailable;
+    private String imageUrl;
 
     // Default constructor is required by JPA
     public Room() {
     }
 
-    public Room(String roomNumber, String roomType, Double price, boolean isAvailable) {
+    public Room(String roomNumber, String roomType, Double price, boolean isAvailable, String imageUrl) {
         this.roomNumber = roomNumber;
         this.roomType = roomType;
         this.price = price;
         this.isAvailable = isAvailable;
+        this.imageUrl = imageUrl;
     }
 
     public Long getId() {
@@ -66,5 +68,13 @@ public class Room {
 
     public void setAvailable(boolean isAvailable) {
         this.isAvailable = isAvailable;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
