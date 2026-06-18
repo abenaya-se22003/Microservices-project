@@ -30,7 +30,7 @@ services:
       # Mount init script — runs ONCE on first container startup
       - ./scripts/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     ports:
-      - "5432:5432"   # Exposed for local DB tooling (DBeaver, pgAdmin)
+      - "5433:5432"   # Exposed for local DB tooling (DBeaver, pgAdmin)
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
