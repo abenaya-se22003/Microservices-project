@@ -9,7 +9,7 @@ function Dashboard() {
   useEffect(function () {
     Promise.all([
       api.get('/api/rooms').catch(function () { return { data: [] }; }),
-      api.get('/api/guests').catch(function () { return { data: [] }; }),
+      api.get('/auth/users').catch(function () { return { data: [] }; }),
       api.get('/api/reservations').catch(function () { return { data: [] }; }),
     ]).then(function (results) {
       setStats({
