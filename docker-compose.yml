@@ -132,10 +132,8 @@ services:
       SPRING_RABBITMQ_USERNAME: ${RABBITMQ_DEFAULT_USER:-guest}
       SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_DEFAULT_PASS:-guest}
       # Feign client URL overrides
-      # spring.cloud.openfeign.client.config.room-service.url
-      SPRING_CLOUD_OPENFEIGN_CLIENT_CONFIG_ROOM_SERVICE_URL: http://room-service:8081/api/rooms
-      # spring.cloud.openfeign.client.config.auth-service.url
-      SPRING_CLOUD_OPENFEIGN_CLIENT_CONFIG_AUTH_SERVICE_URL: http://auth-service:8085/auth/users
+      ROOM_SERVICE_URL: http://room-service:8081/api/rooms
+      AUTH_SERVICE_URL: http://auth-service:8085/auth/users
     ports:
       - "8083:8083"
     depends_on:
@@ -180,6 +178,7 @@ services:
       # Activates application-docker.properties — rewrites all
       # localhost route URIs to use Docker container names.
       SPRING_PROFILES_ACTIVE: docker
+      AUTH_SERVICE_URL: http://auth-service:8085
     ports:
       - "8080:8080"   # Single entry point for all browser API calls
     depends_on:

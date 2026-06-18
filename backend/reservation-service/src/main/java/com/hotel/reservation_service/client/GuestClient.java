@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  * Feign client for fetching user data from the auth-service.
  * Points directly to the auth-service (port 8085), not through the API Gateway.
  */
-@FeignClient(name = "auth-service", url = "http://localhost:8085/auth/users")
+@FeignClient(name = "auth-service", url = "${AUTH_SERVICE_URL:http://localhost:8085/auth/users}")
 public interface GuestClient {
     @GetMapping("/{id}")
     GuestDto getGuestById(@PathVariable("id") Long id);

@@ -31,8 +31,12 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private final WebClient webClient;
 
     public AuthenticationFilter() {
+        String authServiceUrl = System.getenv("AUTH_SERVICE_URL");
+        if (authServiceUrl == null || authServiceUrl.isEmpty()) {
+            authServiceUrl = "http://localhost:8085";
+        }
         this.webClient = WebClient.builder()
-                .baseUrl("http://localhost:8085")
+                .baseUrl(authServiceUrl)
                 .build();
     }
 
