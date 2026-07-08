@@ -17,19 +17,19 @@
   --bg-card-hover: #1a2234;
   --bg-input: #0f172a;
 
-  --border: rgba(99, 102, 241, 0.1);
-  --border-hover: rgba(99, 102, 241, 0.25);
+  --border: rgba(212, 175, 55, 0.12);
+  --border-hover: rgba(212, 175, 55, 0.3);
 
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
 
-  --accent: #6366f1;
-  --accent-hover: #818cf8;
-  --accent-glow: rgba(99, 102, 241, 0.25);
+  --accent: #d4af37;
+  --accent-hover: #e4c04a;
+  --accent-glow: rgba(212, 175, 55, 0.25);
 
-  --gradient-primary: linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa);
-  --gradient-brand: linear-gradient(135deg, #818cf8, #c084fc);
+  --gradient-primary: linear-gradient(135deg, #d4af37, #e4c04a, #f0d76e);
+  --gradient-brand: linear-gradient(135deg, #d4af37, #e4c04a);
 
   --success: #34d399;
   --success-bg: rgba(52, 211, 153, 0.1);
@@ -113,21 +113,22 @@ img {
 
 .btn-primary {
   background: var(--gradient-primary);
-  color: #fff;
+  color: #0c0e14;
+  font-weight: 700;
   box-shadow: 0 4px 14px var(--accent-glow);
 }
 .btn-primary:hover {
-  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 6px 24px rgba(212, 175, 55, 0.45);
   transform: translateY(-1px);
 }
 
 .btn-secondary {
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(212, 175, 55, 0.08);
   color: var(--accent-hover);
   border: 1px solid var(--border);
 }
 .btn-secondary:hover {
-  background: rgba(99, 102, 241, 0.15);
+  background: rgba(212, 175, 55, 0.15);
   border-color: var(--border-hover);
   transform: translateY(-1px);
 }
@@ -228,8 +229,8 @@ img {
 }
 
 .badge-accent {
-  background: rgba(99, 102, 241, 0.1);
-  color: var(--accent-hover);
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--accent);
 }
 
 /* Data Tables */
@@ -247,7 +248,7 @@ img {
 }
 
 .data-table thead {
-  background: rgba(99, 102, 241, 0.06);
+  background: rgba(212, 175, 55, 0.06);
 }
 
 .data-table th {
@@ -272,7 +273,7 @@ img {
 }
 
 .data-table tbody tr:hover {
-  background: rgba(99, 102, 241, 0.03);
+  background: rgba(212, 175, 55, 0.03);
 }
 
 .data-table tbody tr:last-child td {
@@ -341,10 +342,10 @@ img {
 }
 
 .error-state code {
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(212, 175, 55, 0.08);
   padding: 0.15rem 0.5rem;
   border-radius: var(--radius-sm);
-  color: var(--accent-hover);
+  color: var(--accent);
   font-size: 0.82rem;
 }
 
